@@ -18,12 +18,14 @@ typedef struct optargs_s {
 
 EXTERN optargs_t optargs;
 
+#define ETYPE_LEN   16
 typedef struct elf_s {
     char *filename;
     char *map;
     size_t size;
 
-    char cls; 
+    char cls, byte_order; 
+    char etype[ETYPE_LEN];
     union
     {
         Elf32_Ehdr *ehdr32;

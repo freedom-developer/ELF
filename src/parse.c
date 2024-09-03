@@ -40,6 +40,7 @@ elf_t *elf_create(char *filename, char *map, size_t size)
         return NULL;
     }
 
+    return elf;
 }
 
 
