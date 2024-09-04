@@ -77,7 +77,6 @@ void outputSymTitle(void)
     printf("%-*s",  SYMSIZELEN, "Size");
     printf("%-*s", SYMVALLEN, "Value");
 
-
     printf("\n");
 }
 
@@ -102,11 +101,21 @@ char *symBind(elf_t *elf, unsigned char info)
         case STB_WEAK: return "STB_WEAK";
         case STB_LOPROC: return "STB_LOPROC";
         case STB_HIPROC: return "STB_HIPROC";
-        default:  return "STT_UNKNOWN";
+        default:  return "STB_UNKNOWN";
     }
 }
 
-void outputSym(elf_t *elf, uint32_t idx)
+char *getSymName(elf_t *elf, int idx, uint32_t name)
+{
+    int strshndx = SHDR_M(elf, elf->symtab_shndx, sh_link);
+
+    if (idx >= SYMNUM(elf) || name == 0) 
+        return "null";
+    
+    return getStr(elf, strshndx, name);
+}
+
+void outputSym(elf_t *elf, int idx)
 {
     uint32_t name = SYM_M(elf, idx, st_name);
     unsigned char info = SYM_M(elf, idx, st_info);
@@ -114,9 +123,7 @@ void outputSym(elf_t *elf, uint32_t idx)
     printf("%-*s", SYMTYPELEN, symType(elf, info));
     printf("%-*s", SYMBINDLEN, symBind(elf, info));
     
-
-    
-    printf("%s", name == 0 ? "null" : getStr(elf, elf->strtab_shndx, SYM_M(elf, idx, st_name)));
+    printf("%s", getSymName(elf, idx, name));
 
     printf("\n");
 }

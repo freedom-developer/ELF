@@ -41,7 +41,7 @@ typedef struct elf_s {
 #define EHDR_SIZE(e) ((e)->cls == ELFCLASS32 ? sizeof(Elf32_Ehdr) : sizeof(Elf64_Ehdr))
 
     uint64_t strtab_bits;
-    int strtab_shndx, symtab_shndx, dynsym_shndx, hash_shndx, dynamic_shndx;
+    int symtab_shndx, dynsym_shndx, hash_shndx, dynamic_shndx; // 最多只有一个
     union
     {
         Elf32_Shdr **shdr32;
@@ -63,7 +63,16 @@ typedef struct elf_s {
 #define sym32 Sym.sym32
 #define sym64 Sym.sym64
 #define SYM_M(e, i, m) ((e)->cls == ELFCLASS32 ? (e)->sym32[i]->m : (e)->sym64[i]->m)
-    
+
+    union {
+        Elf32_Sym **dynsym32;
+        Elf64_Sym **dynsym64;
+        void **dynsym;
+    } Dynsym;
+#define dynsym Dynsym.dynsym
+#define dynsym32 Dynsym.dynsym32
+#define dynsym64 Dynsym.dynsym64
+#define DYNSYM_M(e, i, m) ((e)->cls == ELFCLASS32 ? (e)->dynsym32[i]->m : (e)->dynsym64[i]->m)    
 
     struct elf_s *next;
 

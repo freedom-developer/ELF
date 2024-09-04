@@ -38,6 +38,7 @@ void outputStrtab(elf_t *elf, int shndx)
     }
     if (SHDR_M(elf, shndx, sh_type) != SHT_STRTAB) {
         log_e("The %dth section is not a strtab\n", shndx);
+        return;
     }
 
     char *s = elf->map + SHDR_M(elf, shndx, sh_offset);

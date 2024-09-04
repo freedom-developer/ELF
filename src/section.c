@@ -97,16 +97,8 @@ int setShdr(elf_t *elf)
                 elf->dynamic_shndx = i;
                 break;
         }
-
         
     }
-
-    for (i = 0; i < shnum; i++) {
-        if (strcmp(getSecName(elf, SHDR_M(elf, i, sh_name)), ".strtab") == 0) {
-            elf->strtab_shndx = i;
-        }
-    }
-
 
 
     return 0;
@@ -126,7 +118,6 @@ int setShdr(elf_t *elf)
 #define LINKWID B32WID
 #define INFOWID B32WID
 #define ALIGNWID B64WID
-
 
 void outputShdrTitle(void)
 {
@@ -154,7 +145,7 @@ void outputShdr(elf_t *elf, int idx)
     }
 
     char *name = getSecName(elf, SHDR_M(elf, idx, sh_name));
-    char *type = secType(SHDR_M(elf, idx, sh_type));
+    char *type = (char *)secType(SHDR_M(elf, idx, sh_type));
     uint64_t addr = SHDR_M(elf, idx, sh_addr);
     uint64_t offset = SHDR_M(elf, idx, sh_offset);
     uint64_t size = SHDR_M(elf, idx, sh_size);

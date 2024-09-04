@@ -4,6 +4,7 @@
 #include "ehdr.h"
 #include "section.h"
 #include "symtab.h"
+#include "dynsym.h"
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -28,6 +29,10 @@ static void elf_destroy(elf_t *elf)
     if (elf->sym)
         free(elf->sym);
     elf->sym = NULL;
+
+    if (elf->dynsym)
+        free(elf->dynsym);
+    elf->dynsym = NULL;
 
     free(elf);
 }
@@ -58,6 +63,10 @@ elf_t *elf_create(char *filename, char *map, size_t size)
 
     if (setSym(elf) < 0) {
         log_e("set symtab error\n");
+    }
+
+    if (setDynsym(elf) < 0) {
+        log_e("set dynsym error\n");
     }
 
     return elf;
