@@ -15,7 +15,8 @@ typedef struct optargs_s {
     char **files;
     int header;     // 0表示不输出Elf_Ehdr, 非为表示输出Elf_Ehdr
     int sheader;
-    int secs[10];
+    uint64_t secs_bits;
+    int symtab;
 } optargs_t;
 
 EXTERN optargs_t optargs;
@@ -39,6 +40,8 @@ typedef struct elf_s {
 #define EHDR_M(e, m) ((e)->cls == ELFCLASS32 ? (e)->ehdr32->m : (e)->ehdr64->m)
 #define EHDR_SIZE(e) ((e)->cls == ELFCLASS32 ? sizeof(Elf32_Ehdr) : sizeof(Elf64_Ehdr))
 
+    uint64_t strtab_bits;
+    int strtab_shndx, symtab_shndx, dynsym_shndx, hash_shndx, dynamic_shndx;
     union
     {
         Elf32_Shdr **shdr32;
@@ -49,9 +52,17 @@ typedef struct elf_s {
 #define shdr32  Shdr.shdr32
 #define shdr64  Shdr.shdr64
 #define SHDR_M(e, i, m) ((e)->cls == ELFCLASS32 ? (e)->shdr32[i]->m : (e)->shdr64[i]->m)
-
     
-
+    union 
+    {
+        Elf32_Sym **sym32;
+        Elf64_Sym **sym64;
+        void **sym;
+    } Sym;
+#define sym Sym.sym
+#define sym32 Sym.sym32
+#define sym64 Sym.sym64
+#define SYM_M(e, i, m) ((e)->cls == ELFCLASS32 ? (e)->sym32[i]->m : (e)->sym64[i]->m)
     
 
     struct elf_s *next;

@@ -6,16 +6,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 static option_t options[] = {
     {0, {"help", no_argument, 0, 0}, OPT_UNDEF, 0, "display this help and exit"},
     {'h', {"header", no_argument, 0, 'h'}, OPT_UNDEF, 0, "output elf's header"},
     {'S', {"section-header", no_argument, 0, 'S'}, OPT_UNDEF, 0, "print section's header"},
+    {'s', {"section", required_argument, 0, 's'}, OPT_INT, "section-index", "print the specify sections"},
+    {'M', {"symtab", no_argument, 0, 'M'}, OPT_UNDEF, 0, "print symtab"},
 
     /*
     {'p', {"program-header", no_argument, 0, 'p'}, OPT_UNDEF, 0, "print program's header"},
     {'P', {"program", required_argument, 0, 'P'}, OPT_INT, "program-index", "print the specify program, -1 specify all"},
     
-    {'S', {"section", required_argument, 0, 'S'}, OPT_INT, "section-index", "print the specify section, -1 specify all"},
+    
     */
 
     {0, {0, 0, 0, 0}, 0, 0}
@@ -62,6 +65,7 @@ int parse_arguments(int argc, char **argv)
     size_t sopt_len = options_cnt * 3 + 1;
     size_t long_opts_cnt = options_cnt + 1;
     int exit_flag = 0;
+    char *p;
 
     // 初始化所有的选项参数值
     memset(&optargs, 0, sizeof(optargs));
@@ -97,20 +101,28 @@ int parse_arguments(int argc, char **argv)
             case 'S':
                 optargs.sheader = 1;
                 break;
-                /*
-            case 'p':
-                pr_pheader = 1;
-                break;
-            case 'P':
-                pidx = atoi(optarg);
-                break;
             case 's':
-                pr_sheader = 1;
+                p = optarg;
+                printf("optarg: %s\n", p);
+                while (*p) {
+                    if (*p < '0' || *p > '9') {
+                        p++;
+                    } else {
+                        char *n = p + 1;
+                        while (*n >= '0' && *n <= '9') n++;
+                        *n = 0;
+                        if (atoi(p) < 64)
+                            optargs.secs_bits |= (1 << atoi(p));
+                        
+                        printf("shndx: %d\n", atoi(p));
+
+                        p = n + 1;
+                    }
+                }
                 break;
-            case 'S':
-                sidx = atoi(optarg);
+            case 'M':
+                optargs.symtab = 1;
                 break;
-                */
             case '?':
                 exit_flag |= 0x81;
                 break;

@@ -79,7 +79,35 @@ int setShdr(elf_t *elf)
 
     for (i = 0; i < shnum; i++) {
         elf->shdr[i] = (void *)(elf->map + shoff + shentsize * i);
+
+        switch (SHDR_M(elf, i, sh_type)) {
+            case SHT_STRTAB:
+                elf->strtab_bits |= (1ULL << i);
+                break;
+            case SHT_SYMTAB:
+                elf->symtab_shndx = i;
+                break;
+            case SHT_DYNSYM:
+                elf->dynsym_shndx = i;
+                break;
+            case SHT_HASH:
+                elf->hash_shndx = i;
+                break;
+            case SHT_DYNAMIC:
+                elf->dynamic_shndx = i;
+                break;
+        }
+
+        
     }
+
+    for (i = 0; i < shnum; i++) {
+        if (strcmp(getSecName(elf, SHDR_M(elf, i, sh_name)), ".strtab") == 0) {
+            elf->strtab_shndx = i;
+        }
+    }
+
+
 
     return 0;
 }
@@ -167,3 +195,21 @@ void outputAllShdr(elf_t *elf)
     }
 }
 
+
+void outputSector(elf_t *elf, int shndx)
+{
+    if (!elf || !elf->shdr) {
+        log_e("argment invliad\n");
+        return;
+    }
+
+    if (EHDR_M(elf, e_shnum) < shndx) {
+        log_e("shndx %d invalid\n", shndx);
+        return;
+    }
+
+    printf("SECTION %d: %s\n", shndx, getSecName(elf, SHDR_M(elf, shndx, sh_name)));
+    if (SHDR_M(elf, shndx, sh_type) == SHT_STRTAB) {
+        outputStrtab(elf, shndx);
+    }
+}

@@ -3,6 +3,7 @@
 #include "parse.h"
 #include "ehdr.h"
 #include "section.h"
+#include "symtab.h"
 
 
 int main(int argc, char **argv)
@@ -28,7 +29,23 @@ int main(int argc, char **argv)
         if (optargs.sheader) {
             outputAllShdr(elf);
         }
+
+        if (optargs.secs_bits) {
+            for (i = 0; i < 64; i++) {
+                if (optargs.secs_bits & (1ULL << i)) {
+                    outputSector(elf, i);
+                }
+            }
+        }
+
+        if (optargs.symtab) {
+            outputSymtab(elf);
+        }
     }
+
+    
+
+    
 
 
     free_elfs();

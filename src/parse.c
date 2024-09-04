@@ -3,6 +3,7 @@
 #include "global.h"
 #include "ehdr.h"
 #include "section.h"
+#include "symtab.h"
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -23,6 +24,10 @@ static void elf_destroy(elf_t *elf)
         free(elf->shdr);
     }
     elf->shdr = NULL;
+
+    if (elf->sym)
+        free(elf->sym);
+    elf->sym = NULL;
 
     free(elf);
 }
@@ -49,6 +54,10 @@ elf_t *elf_create(char *filename, char *map, size_t size)
     if (setShdr(elf) < 0) {
         elf_destroy(elf);
         return NULL;
+    }
+
+    if (setSym(elf) < 0) {
+        log_e("set symtab error\n");
     }
 
     return elf;
