@@ -9,11 +9,12 @@
 static option_t options[] = {
     {0, {"help", no_argument, 0, 0}, OPT_UNDEF, 0, "display this help and exit"},
     {'h', {"header", no_argument, 0, 'h'}, OPT_UNDEF, 0, "output elf's header"},
+    {'S', {"section-header", no_argument, 0, 'S'}, OPT_UNDEF, 0, "print section's header"},
 
     /*
     {'p', {"program-header", no_argument, 0, 'p'}, OPT_UNDEF, 0, "print program's header"},
     {'P', {"program", required_argument, 0, 'P'}, OPT_INT, "program-index", "print the specify program, -1 specify all"},
-    {'s', {"section-header", no_argument, 0, 's'}, OPT_UNDEF, 0, "print section's header"},
+    
     {'S', {"section", required_argument, 0, 'S'}, OPT_INT, "section-index", "print the specify section, -1 specify all"},
     */
 
@@ -92,6 +93,9 @@ int parse_arguments(int argc, char **argv)
                 break;
             case 'h':
                 optargs.header = 1;
+                break;
+            case 'S':
+                optargs.sheader = 1;
                 break;
                 /*
             case 'p':

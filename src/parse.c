@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "global.h"
 #include "ehdr.h"
+#include "section.h"
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -17,6 +18,11 @@ static void elf_destroy(elf_t *elf)
     if (elf->map && elf->size > 0) {
         munmap((void*)elf->map, elf->size);
     }
+
+    if (elf->shdr) {
+        free(elf->shdr);
+    }
+    elf->shdr = NULL;
 
     free(elf);
 }
@@ -36,6 +42,11 @@ elf_t *elf_create(char *filename, char *map, size_t size)
     elf->destroy = elf_destroy;
 
     if (setEhdr(elf) < 0) {
+        elf_destroy(elf);
+        return NULL;
+    }
+
+    if (setShdr(elf) < 0) {
         elf_destroy(elf);
         return NULL;
     }

@@ -2,6 +2,7 @@
 #include "parse_arguments.h"
 #include "parse.h"
 #include "ehdr.h"
+#include "section.h"
 
 
 int main(int argc, char **argv)
@@ -24,7 +25,11 @@ int main(int argc, char **argv)
         if (optargs.header) { // 输出Ehdr
             outputEhdr(elf);
         }
+        if (optargs.sheader) {
+            outputAllShdr(elf);
+        }
     }
+
 
     free_elfs();
 
