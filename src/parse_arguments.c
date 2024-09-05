@@ -13,12 +13,11 @@ static option_t options[] = {
     {'S', {"section-header", no_argument, 0, 'S'}, OPT_UNDEF, 0, "print section's header"},
     {'s', {"section", required_argument, 0, 's'}, OPT_INT, "section-index", "print the specify sections"},
     {'M', {"symtab", no_argument, 0, 'M'}, OPT_UNDEF, 0, "print symtab"},
+    {'D', {"symtab", no_argument, 0, 'D'}, OPT_UNDEF, 0, "print dynsym"},
 
     /*
     {'p', {"program-header", no_argument, 0, 'p'}, OPT_UNDEF, 0, "print program's header"},
     {'P', {"program", required_argument, 0, 'P'}, OPT_INT, "program-index", "print the specify program, -1 specify all"},
-    
-    
     */
 
     {0, {0, 0, 0, 0}, 0, 0}
@@ -123,6 +122,10 @@ int parse_arguments(int argc, char **argv)
             case 'M':
                 optargs.symtab = 1;
                 break;
+            case 'D':
+                optargs.dynsym0 = 1;
+                break;    
+
             case '?':
                 exit_flag |= 0x81;
                 break;

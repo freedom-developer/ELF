@@ -58,13 +58,7 @@ int setSym(elf_t *elf)
     return 0;
 }
 
-#define SYMNAMELEN 12
-#define SYMTYPELEN 15
-#define SYMBINDLEN 20
-#define SYMVISLEN 15
-#define SYMSHNLEN 8
-#define SYMSIZELEN 20
-#define SYMVALLEN 20
+
 
 void outputSymTitle(void)
 {
@@ -105,6 +99,19 @@ char *symBind(elf_t *elf, unsigned char info)
     }
 }
 
+
+char *symVis(elf_t *elf, unsigned char other)
+{
+    switch(elf->cls == ELFCLASS32 ? ELF32_ST_VISIBILITY(other) : ELF64_ST_VISIBILITY(other)) {
+        case STV_DEFAULT: return "STV_DEFAULT";
+        case STV_INTERNAL: return "STV_INTERNAL";
+        case STV_HIDDEN: return "STV_HIDDEN";
+        case STV_PROTECTED: return "STV_PROTECTED";
+        default: return "STV_UNKNOWN";
+    }
+}
+
+
 char *getSymName(elf_t *elf, int idx, uint32_t name)
 {
     int strshndx = SHDR_M(elf, elf->symtab_shndx, sh_link);
@@ -117,11 +124,20 @@ char *getSymName(elf_t *elf, int idx, uint32_t name)
 
 void outputSym(elf_t *elf, int idx)
 {
+    if (idx >= SYMNUM(elf)) {
+        log_e("idx %d invalid\n", idx);
+        return;
+    }
     uint32_t name = SYM_M(elf, idx, st_name);
     unsigned char info = SYM_M(elf, idx, st_info);
+    unsigned char other = SYM_M(elf, idx, st_other);
     printf(" [%03d]    %08x    ", idx, name);
     printf("%-*s", SYMTYPELEN, symType(elf, info));
     printf("%-*s", SYMBINDLEN, symBind(elf, info));
+    printf("%-*s", SYMVISLEN, symVis(elf, other));
+    printf("%04d    ", SYM_M(elf, idx, st_shndx));
+    printf("%-16ld    ", SYM_M(elf, idx, st_size));
+    printf("%016lx    ", SYM_M(elf, idx, st_value));
     
     printf("%s", getSymName(elf, idx, name));
 

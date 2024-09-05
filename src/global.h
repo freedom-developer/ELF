@@ -17,6 +17,7 @@ typedef struct optargs_s {
     int sheader;
     uint64_t secs_bits;
     int symtab;
+    int dynsym0;
 } optargs_t;
 
 EXTERN optargs_t optargs;

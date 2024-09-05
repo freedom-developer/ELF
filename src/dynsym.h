@@ -5,4 +5,6 @@
 
 int setDynsym(elf_t *elf);
 
+void outputDynsymtab(elf_t *elf);
+
 #endif

@@ -4,6 +4,7 @@
 #include "ehdr.h"
 #include "section.h"
 #include "symtab.h"
+#include "dynsym.h"
 
 
 int main(int argc, char **argv)
@@ -40,6 +41,10 @@ int main(int argc, char **argv)
 
         if (optargs.symtab) {
             outputSymtab(elf);
+        }
+
+        if (optargs.dynsym0) {
+            outputDynsymtab(elf);
         }
     }
 
