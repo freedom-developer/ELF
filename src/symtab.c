@@ -89,7 +89,7 @@ char *symType(elf_t *elf, unsigned char info)
 
 char *symBind(elf_t *elf, unsigned char info)
 {
-    switch(elf->cls == ELFCLASS32 ? ELF32_ST_TYPE(info) : ELF64_ST_TYPE(info)) {
+    switch(elf->cls == ELFCLASS32 ? ELF32_ST_BIND(info) : ELF64_ST_BIND(info)) {
         case STB_LOCAL: return "STB_LOCAL";
         case STB_GLOBAL: return "STB_GLOBAL";
         case STB_WEAK: return "STB_WEAK";
@@ -131,11 +131,22 @@ void outputSym(elf_t *elf, int idx)
     uint32_t name = SYM_M(elf, idx, st_name);
     unsigned char info = SYM_M(elf, idx, st_info);
     unsigned char other = SYM_M(elf, idx, st_other);
+    uint16_t shndx = SYM_M(elf, idx, st_shndx);
+
     printf(" [%03d]    %08x    ", idx, name);
     printf("%-*s", SYMTYPELEN, symType(elf, info));
     printf("%-*s", SYMBINDLEN, symBind(elf, info));
     printf("%-*s", SYMVISLEN, symVis(elf, other));
-    printf("%04d    ", SYM_M(elf, idx, st_shndx));
+    switch (shndx) {
+        case SHN_ABS:
+            printf("%-*s", SYMSHNLEN, "ABS"); break;
+        case SHN_COMMON:
+            printf("%-*s", SYMSHNLEN, "COMMON"); break;
+        case SHN_UNDEF:
+            printf("%-*s", SYMSHNLEN, "UNDEF"); break;
+        default:
+            printf("%04x    ", shndx); break;
+    }
     printf("%-16ld    ", SYM_M(elf, idx, st_size));
     printf("%016lx    ", SYM_M(elf, idx, st_value));
     

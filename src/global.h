@@ -75,6 +75,16 @@ typedef struct elf_s {
 #define dynsym64 Dynsym.dynsym64
 #define DYNSYM_M(e, i, m) ((e)->cls == ELFCLASS32 ? (e)->dynsym32[i]->m : (e)->dynsym64[i]->m)    
 
+    union {
+        Elf32_Phdr **prg32;
+        Elf64_Phdr **prg64;
+        void **prg;
+    } Prg;
+#define prg Prg.prg
+#define prg32 Prg.prg32
+#define prg64 Prg.prg64
+#define PRG_M(e, i, m) ((e)->cls == ELFCLASS32 ? (e)->prg32[i]->m : (e)->prg64[i]->m)
+
     struct elf_s *next;
 
     void (*destroy)(struct elf_s *elf);

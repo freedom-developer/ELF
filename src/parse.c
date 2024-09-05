@@ -34,6 +34,10 @@ static void elf_destroy(elf_t *elf)
         free(elf->dynsym);
     elf->dynsym = NULL;
 
+    if (elf->prg) 
+        free(elf->prg);
+    elf->prg = NULL;
+
     free(elf);
 }
 
