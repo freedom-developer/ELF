@@ -5,6 +5,7 @@
 #include "section.h"
 #include "symtab.h"
 #include "dynsym.h"
+#include "program.h"
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -34,9 +35,9 @@ static void elf_destroy(elf_t *elf)
         free(elf->dynsym);
     elf->dynsym = NULL;
 
-    if (elf->prg) 
-        free(elf->prg);
-    elf->prg = NULL;
+    if (elf->phdr) 
+        free(elf->phdr);
+    elf->phdr = NULL;
 
     free(elf);
 }
@@ -71,6 +72,10 @@ elf_t *elf_create(char *filename, char *map, size_t size)
 
     if (setDynsym(elf) < 0) {
         log_e("set dynsym error\n");
+    }
+
+    if (setPhdrs(elf) < 0) {
+        log_e("The file %s have no programmer header", elf->filename);
     }
 
     return elf;

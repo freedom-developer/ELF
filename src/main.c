@@ -5,6 +5,7 @@
 #include "section.h"
 #include "symtab.h"
 #include "dynsym.h"
+#include "program.h"
 
 
 int main(int argc, char **argv)
@@ -45,6 +46,10 @@ int main(int argc, char **argv)
 
         if (optargs.dynsym0) {
             outputDynsymtab(elf);
+        }
+
+        if (optargs.prghdr) {
+            outputPhdrs(elf);
         }
     }
 

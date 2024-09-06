@@ -186,6 +186,34 @@ void outputAllShdr(elf_t *elf)
     }
 }
 
+void outputSector_gen(elf_t *elf, int shndx)
+{
+    char *p;
+    size_t offset, size;
+    int i;
+
+    if (shndx >= EHDR_M(elf, e_shnum)) {
+        log_e("shndx %d invalid\n", shndx);
+        return;
+    }
+    offset = SHDR_M(elf, shndx, sh_offset);
+    size = SHDR_M(elf, shndx, sh_size);
+    if (elf->size < offset + size) {
+        log_e("elf file %s invliad\n", elf->filename);
+        return;
+    }
+
+    p = elf->map + offset;
+    
+    printf("0000:  ");
+    for (i = 0; i < size; i++) {
+        if (i > 0 && i % 16 == 0) log_i("\n%04x:  ", i / 16);
+        log_i("%02x ", (uint8_t)p[i]);
+    }
+    if (i % 16) log_i("\n");
+
+}
+
 
 void outputSector(elf_t *elf, int shndx)
 {
@@ -202,5 +230,7 @@ void outputSector(elf_t *elf, int shndx)
     printf("SECTION %d: %s\n", shndx, getSecName(elf, SHDR_M(elf, shndx, sh_name)));
     if (SHDR_M(elf, shndx, sh_type) == SHT_STRTAB) {
         outputStrtab(elf, shndx);
+    } else {
+        outputSector_gen(elf, shndx);
     }
 }

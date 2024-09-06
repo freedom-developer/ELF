@@ -1,6 +1,8 @@
 #define DEFINE_VAR
 #include "global.h"
 
+uint64_t g_test = 1000;
+
 void free_elfs(void)
 {
     elf_t *elf, **next;
